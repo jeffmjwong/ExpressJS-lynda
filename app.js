@@ -2,9 +2,10 @@
 
 const express = require('express');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 const app = express();
 
-const dictionaryTerms = [
+let dictionaryTerms = [
   {
     term: 'LOL',
     defined: 'laugh out loud'
@@ -19,8 +20,11 @@ const dictionaryTerms = [
   }
 ];
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
 app.use((request, response, next) => {
-  console.log(`${request.method} request for '${request.url}'`);
+  console.log(`${request.method} request for '${request.url}' - ${JSON.stringify(request.body)}`);
   next();
 });
 
@@ -29,6 +33,18 @@ app.use(express.static('./public'));
 app.use(cors());
 
 app.get('/dictionary-api', (request, response) => {
+  response.json(dictionaryTerms);
+});
+
+app.post('/dictionary-api', (request, response) => {
+  dictionaryTerms.push(request.body);
+  response.json(dictionaryTerms);
+});
+
+app.delete('/dictionary-api/:term', (request, response) => {
+  dictionaryTerms = dictionaryTerms.filter(definition => {
+    return definition.term.toLowerCase() !== request.params.term.toLowerCase();
+  });
   response.json(dictionaryTerms);
 });
 

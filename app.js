@@ -1,8 +1,23 @@
 /* jshint esnext: true */
 
 const express = require('express');
-
+const cors = require('cors');
 const app = express();
+
+const dictionaryTerms = [
+  {
+    term: 'LOL',
+    defined: 'laugh out loud'
+  },
+  {
+    term: 'TBH',
+    defined: 'to be honest'
+  },
+  {
+    term: 'OMW',
+    defined: 'on my way'
+  }
+];
 
 app.use((request, response, next) => {
   console.log(`${request.method} request for '${request.url}'`);
@@ -10,6 +25,12 @@ app.use((request, response, next) => {
 });
 
 app.use(express.static('./public'));
+
+app.use(cors());
+
+app.get('/dictionary-api', (request, response) => {
+  response.json(dictionaryTerms);
+});
 
 app.listen(4321);
 
